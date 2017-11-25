@@ -1,7 +1,8 @@
 import sys, pygame
         
 BACKGROUND = "../res/background.jpg"
-IMAGES = {"ball": "../res/ball.bmp"}
+IMAGES = {"ball": "../res/ball.bmp",
+          "enemy": "../res/alien.png"}
 BLACK = 0, 0, 0
 
 # interface with the world
@@ -19,16 +20,13 @@ class Graphics:
     # elem_type deterimnes what kind of image is used, i.e. 'spaceship'
     def add_element(self, elem_type, element):
         filename = IMAGES[elem_type]
-        if not (hasattr(element, 'getx') and hasattr(element, 'gety')):
-            arg_elem = element
-            element = Wrapper(lambda: arg_elem.x,
-                              lambda: arg_elem.y,
-                              lambda: arg_elem.w,
-                              lambda: arg_elem.h)
-        if(elem_type == "ball"):
-            drawable_elem = Drawable(filename,
-                                     element.getx, element.gety,
-                                     element.getw, element.geth)
+        wrapped = Wrapper(element)
+        getx = wrapped.getfunc('x')
+        gety = wrapped.getfunc('y')
+        getw = wrapped.getfunc('w')
+        geth = wrapped.getfunc('h')
+        if(elem_type is not None):
+            drawable_elem = Drawable(filename, getx, gety, getw, geth)
             self.elements.append(drawable_elem)
     # draws all graphics objects
     # params are a dictionary of constants not associated with objects
@@ -59,11 +57,14 @@ class Drawable:
         screen.blit(img, (self.getx(), self.gety()))
 
 class Wrapper:
-    def __init__(self, getx, gety, getw, geth):
-        self.getx = getx
-        self.gety = gety
-        self.getw = getw
-        self.geth = geth
+    def __init__(self, elem):
+        self.elem = elem
+    def getfunc(self, name):
+        if hasattr(self.elem, 'get'+name):
+            return getattr(self.elem, 'get'+name)
+        else:
+            return lambda: getattr(self.elem, name)
+        
 
 class Background:
 

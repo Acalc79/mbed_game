@@ -23,8 +23,8 @@ def check_inputs():
     
 def init():
     global ball
-    ball = Elem(0, 0, 10, 10)
-    graphics.add_element("ball", ball)
+    ball = Elem(0, 0, 50, 50)
+    graphics.add_element("enemy", ball)
 
 def update_state():
     global ball
