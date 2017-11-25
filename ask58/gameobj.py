@@ -81,13 +81,13 @@ class Enemy(GameObject):
     def update_enemy(self):
         """ Called each frame. """
         self.rect.x += self.change_x
-        self.rect.y += self.change_y
+        """ self.rect.y += self.change_y # moving horizontally"""
      
         if self.rect.right >= self.right_boundary or self.rect.left <= self.left_boundary:
             self.change_x *= -1
      
-        if self.rect.bottom >= self.bottom_boundary or self.rect.top <= self.top_boundary:
-            self.change_y *= -1
+        """ if self.rect.bottom >= self.bottom_boundary or self.rect.top <= self.top_boundary:
+            self.change_y *= -1 #moving horizontally"""
             
 class GameObject:
     def update(self):
