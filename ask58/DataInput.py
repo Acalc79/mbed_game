@@ -46,7 +46,7 @@ while not done:
         if event.type == pygame.QUIT:
             done = True
     if # get button input - MySwitch = 3.3
-        # Fire a bullet if the user clicks the SW0/SW1 button
+        # Fire a bullet if the user pushes on the SW0/SW1 button
         bullet = Bullet()
         # Set the bullet so it is where the player is
         bullet.rect.x = player.rect.x
