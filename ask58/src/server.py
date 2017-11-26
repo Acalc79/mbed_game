@@ -2,9 +2,6 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 import socketserver
 import socket
 import json
-from game import Game
-
-game = None
 
 class MyHandler(BaseHTTPRequestHandler):
     # HTTP REQUESTS HERE
@@ -40,7 +37,7 @@ class MyHandler(BaseHTTPRequestHandler):
         self.wfile.write(content)
         post_data = self.rfile.read(100)
         json_dict = json.loads(post_data)
-        print(json_dict)
+##        print(json_dict)
         global game
         if game is not None:
             game.input = data_to_game_inputs(json_dict)
@@ -65,11 +62,13 @@ def run():
     httpd = HTTPServer(('', 8080), MyHandler)
     print ("HTTP server running on port 8080")
     print ("Your IP address is: ", socket.gethostbyname(socket.gethostname()))
-    httpd.serve_forever()
+##    httpd.serve_forever()
     httpd.timeout = 0.05
+    return httpd
+
+def set_game(g):
     global game
-    game = Game(httpd.handle_request)
-    game.start_game()
+    game = g
 
 if __name__ == '__main__':
     run()

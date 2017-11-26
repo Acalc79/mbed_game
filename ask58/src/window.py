@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import Tk, Frame, Grid, Button, Text
 from game import Game
+import server
 
 STICK_ALL = tk.N+tk.S+tk.W+tk.E
 
@@ -12,6 +13,7 @@ BTN_PAD_Y = 10
 class Application(Frame):
     def __init__(self, master=None):
         super().__init__(master)
+        self.difficulty = 1
         self.grid(row=0, column=0, sticky=STICK_ALL)
         Grid.rowconfigure(self.master, 0, weight=1)
         Grid.columnconfigure(self.master, 0, weight=1)
@@ -37,20 +39,24 @@ class Application(Frame):
     def create_buttons(self):
         self.play_btn = Button(self, text="PLAY", command=self.play_game)
         self.place_item(self.play_btn)
-
-        self.settings_btn = Button(self, text="SETTINGS",
-                                   command=self.show_settings_dialog)
+        
+        self.settings_btn = Button(self, text="DIFFICULTY: "+str(self.difficulty),
+                                   command=self.toggle_difficulty)
         self.place_item(self.settings_btn)
         
         self.quit_btn = Button(self, text="QUIT",
                                command=root.destroy)
         self.place_item(self.quit_btn)
 
-    def show_settings_dialog(self):
-        pass
-
+    def toggle_difficulty(self):
+        self.difficulty = self.difficulty % 3 + 1
+        self.settings_btn['text'] = "DIFFICULTY: "+str(self.difficulty)
+        
     def play_game(self):
-        mechanics.start_game()
+        httpd = server.run()
+        game = Game(httpd.handle_request, self.difficulty)
+        server.set_game(game)
+        game.start_game()
 
 root = Tk()
 app = Application(master=root)

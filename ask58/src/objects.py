@@ -79,11 +79,17 @@ class GameObject:
     def type(self):
         return self._t
 
-    def x(self):
-        return self._x
+    def x(self, x0=None):
+        if x0 is not None:
+            self._x = x0
+        else:
+            return self._x
 
-    def y(self):
-        return self._y
+    def y(self, y0=None):
+        if y0 is not None:
+            self._y = y0
+        else:
+            return self._y
 
     def w(self):
         return self._w
@@ -134,26 +140,50 @@ class Player(SolidObject):
             self.game_lost_handler()
 
 class Enemy(SolidObject):
-    def __init__(self, vx, vy, delete_enemy, width, w, h):
+    def __init__(self, update_handler, hp, vx, vy, width, w, h):
         x = rand.random()*(width - w)
         y = 0
         super().__init__(GameObjT.ENEMY, x, y, w, h)
         self.speed((vx, vy))
-        self.destruct = delete_enemy
+        self.destruct = lambda: None
+        self.hp = hp
+        self.dead = False
+        self.update_handler = update_handler
+
+    def update(self, time):
+        super().update(time)
+        self.update_handler(self)
 
     def handle_collision_with(self, other):
-        if other.type() is GameObjT.PLAYER_BULLET:
-            self.destruct()
+        if other.type() in [GameObjT.PLAYER_BULLET, GameObjT.ENEMY_BULLET]:
+            if not self.dead:
+                self.destruct()
             
 class PlayerBullet(SolidObject):
-    def __init__(self, vx, vy, delete_bullet, x, y, w, h):
+    def __init__(self, vx, vy, x, y, w, h):
         super().__init__(GameObjT.PLAYER_BULLET, x, y, w, h)
         self.speed((vx, vy))
-        self.destruct = delete_bullet
+        self.destruct = lambda: None
+        self.dead = False
 
     def handle_collision_with(self, other):
-        if other.type() in [GameObjT.PLAYER, GameObjT.SHIELD]:
-            self.destruct()
+        if other.type() is GameObjT.ENEMY:
+            if not self.dead:
+                self.destruct()
+                self.dead = True
+            
+class EnemyBullet(SolidObject):
+    def __init__(self, vx, vy, x, y, w, h):
+        super().__init__(GameObjT.ENEMY_BULLET, x, y, w, h)
+        self.speed((vx, vy))
+        self.destruct = lambda: None
+        self.dead = False
+
+    def handle_collision_with(self, other):
+        if other.type() in [GameObjT.ENEMY, GameObjT.PLAYER, GameObjT.SHIELD]:
+            if not self.dead:
+                self.destruct()
+                self.dead = True
             
 class Collectible(SolidObject):
     def __init__(self, collect_event_handler, x, y, w, h):
@@ -165,16 +195,16 @@ class Collectible(SolidObject):
             self.collect_event_handler()
 
 class Shield(SolidObject):
-    def __init__(self, x, y, w, h, hp, shield_end_handler):
+    def __init__(self, x, y, w, h, hp):
         super().__init__(GameObjT.SHIELD, x, y, w, h)
-        self.shield_end_handler
+        self.destruct = lambda: None
         self._hp = hp
 
     def handle_collision_with(self, other):
-        if other.type() is GameObjT.PLAYER_BULLET:
+        if other.type() is GameObjT.ENEMY_BULLET:
             self.hp(self.hp() - 1)
             if self.hp() <= 0:
-                self.shield_end_handler()
+                self.destruct()
 
     def hp(self, hp=None):
         if hp is not None:

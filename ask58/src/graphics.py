@@ -11,6 +11,7 @@ class GraphicsObjT(Enum):
     ALIEN = auto()
     BALL = auto()
     BULLET = auto()
+    DOWN_BULLET = auto()
     COIN = auto()
     SPHERE = auto()
     BACKGROUND = auto()
@@ -19,19 +20,22 @@ IMAGES = {GraphicsObjT.BALL: "../res/ball.bmp",
           GraphicsObjT.ALIEN: "../res/alien.png",
           GraphicsObjT.SPACESHIP: "../res/spaceship.jpg",
           GraphicsObjT.BACKGROUND: "../res/background.jpg",
-          GraphicsObjT.BULLET: "../res/bullet.png"}
+          GraphicsObjT.BULLET: "../res/bullet.png",
+          GraphicsObjT.DOWN_BULLET: "../res/down_bullet.png",
+          GraphicsObjT.SPHERE: "../res/shield.png"}
 BLACK = 0, 0, 0
 
 # interface with the world
 class Graphics:
     
     # initialize graphics          
-    def __init__(self, width, height):
+    def __init__(self, score, width, height):
         pygame.init()
         self.size = width, height
         self.screen = pygame.display.set_mode(self.size)
         self.elements = []
         self.elem_map = {}
+        pygame.display.set_caption("SCORE: "+str(score))
         
     # add element
     # the element must have a get_type() method
@@ -45,6 +49,15 @@ class Graphics:
             drawable_elem = Drawable(filename, element)
         self.elem_map[element] = drawable_elem
         self.elements.append(drawable_elem)
+        
+    def add_element_at(self, n, elem_type, element):
+        filename = IMAGES[elem_type]
+        if(elem_type is GraphicsObjT.BACKGROUND):
+            drawable_elem = Background(filename, element, self.size)
+        elif(elem_type is not None):
+            drawable_elem = Drawable(filename, element)
+        self.elem_map[element] = drawable_elem
+        self.elements.insert(n, drawable_elem)
 
     def remove(self, elem):
         self.elements.remove(self.elem_map[elem])
@@ -53,10 +66,11 @@ class Graphics:
     # params are a dictionary of constants not associated with objects
     # i.e. speed of background scrolling
     # exact format TBD
-    def draw(self):
+    def draw(self, score):
         self.screen.fill(BLACK)
         for elem in self.elements:
             elem.draw(self.screen)
+        pygame.display.set_caption("SCORE: "+str(score))
         pygame.display.flip()
         
     # closes graphics window, should only be called by game window
