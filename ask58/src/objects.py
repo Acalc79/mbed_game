@@ -7,7 +7,8 @@ EPSILON = 0.001
 class GameObjT(Enum):
     PLAYER = auto()
     ENEMY = auto()
-    BULLET = auto()
+    ENEMY_BULLET = auto()
+    PLAYER_BULLET = auto()
     COLLECTIBLE = auto()
     SHIELD = auto()
     BACKGROUND = auto()
@@ -129,7 +130,7 @@ class Player(SolidObject):
     def handle_collision_with(self, other):
         if other.type() is GameObjT.ENEMY:
             self.game_lost_handler()
-        elif other.type() is GameObjT.BULLET:
+        elif other.type() is GameObjT.ENEMY_BULLET:
             self.game_lost_handler()
 
 class Enemy(SolidObject):
@@ -141,12 +142,12 @@ class Enemy(SolidObject):
         self.destruct = delete_enemy
 
     def handle_collision_with(self, other):
-        if other.type() is GameObjT.BULLET:
+        if other.type() is GameObjT.PLAYER_BULLET:
             self.destruct()
             
-class Bullet(SolidObject):
+class PlayerBullet(SolidObject):
     def __init__(self, vx, vy, delete_bullet, x, y, w, h):
-        super().__init__(GameObjT.BULLET, x, y, w, h)
+        super().__init__(GameObjT.PLAYER_BULLET, x, y, w, h)
         self.speed((vx, vy))
         self.destruct = delete_bullet
 
@@ -170,7 +171,7 @@ class Shield(SolidObject):
         self._hp = hp
 
     def handle_collision_with(self, other):
-        if other.type() is GameObjT.BULLET:
+        if other.type() is GameObjT.PLAYER_BULLET:
             self.hp(self.hp() - 1)
             if self.hp() <= 0:
                 self.shield_end_handler()

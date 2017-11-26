@@ -18,7 +18,8 @@ class GraphicsObjT(Enum):
 IMAGES = {GraphicsObjT.BALL: "../res/ball.bmp",
           GraphicsObjT.ALIEN: "../res/alien.png",
           GraphicsObjT.SPACESHIP: "../res/spaceship.jpg",
-          GraphicsObjT.BACKGROUND: "../res/background.jpg"}
+          GraphicsObjT.BACKGROUND: "../res/background.jpg",
+          GraphicsObjT.BULLET: "../res/bullet.png"}
 BLACK = 0, 0, 0
 
 # interface with the world
