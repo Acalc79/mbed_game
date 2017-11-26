@@ -2,7 +2,7 @@ import pygame, sys
 import random as rand
 import json
 from graphics import Graphics, GraphicsObjT, GraphicsParam
-from objects import Player, Enemy, Collectible, PlayerBullet, Background
+from objects import GameObjT, Player, Enemy, Collectible, PlayerBullet, Background
 
 PLAYER_W = 30
 PLAYER_H = 30
@@ -71,11 +71,21 @@ class Game:
         self.graphics.add_element(GraphicsObjT.SPACESHIP, self.player)
 
     def handle_borders(self, elem):
-        if elem.x() < 0 or elem.x()+elem.w() > self.width:
-            elem.bounce_x()
-        elif elem.y() > self.height or elem.y() + elem.h() < 0:
-            self.elems.remove(elem)
-            self.graphics.remove(elem)
+        if elem.type() is GameObjT.PLAYER:
+            if elem.x() < 0:
+                elem.x(0)
+            elif elem.x()+elem.w() > self.width:
+                elem.x(self.width - elem.w())
+            if elem.y() < 0:
+                elem.y(0)
+            elif elem.y()+elem.h() > self.height:
+                elem.y(self.height - elem.h())
+        else:
+            if elem.x() < 0 or elem.x()+elem.w() > self.width:
+                elem.bounce_x()
+            elif elem.y() > self.height or elem.y() + elem.h() < 0:
+                self.elems.remove(elem)
+                self.graphics.remove(elem)
     
     def update_state(self):
         if rand.random() < ENEMY_SPAWN_FREQ * self.difficulty:
