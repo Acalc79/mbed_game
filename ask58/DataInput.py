@@ -29,23 +29,23 @@ all_sprites_list.add(player)
 # Loop until the user clicks the close button.
 done = False
 
-while not done:
-    # --- Event Processing
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            done = True
- 
+def checksteer():
     # get the y-axis reading directly from Mbed 
     if MMA.y < -0.5:
         # Steer player to the right
         player.change_x = 3
     
     #get the y-axis reading directly from Mbed
-    elif MMA.y > 0.5:
+    else MMA.y > 0.5:
         # Steer player to the left
         player.change_x = -3
-            
-    elif mySwitch = 3.3: # get the button input
+       
+while not done:
+    # --- Event Processing
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            done = True
+    if # get button input - MySwitch = 3.3
         # Fire a bullet if the user clicks the SW0/SW1 button
         bullet = Bullet()
         # Set the bullet so it is where the player is
@@ -54,6 +54,31 @@ while not done:
         # Add the bullet to the lists
         all_sprites_list.add(bullet)
         bullet_list.add(bullet)
+        checksteer()
+            
+    elif # get laserdistance
+        # Fire a bullet if the user places the hand a distance above the laser sensor
+        bullet = Bullet() # should change Bullet class to include attribute e.g. height/width to produce bigger bullet
+        # Set the bullet so it is where the player is
+        bullet.rect.x = player.rect.x
+        bullet.rect.y = player.rect.y
+        # Add the bullet to the lists
+        all_sprites_list.add(bullet)
+        bullet_list.add(bullet)
+        checksteer()
+       
+    else # get humidity
+        # Fire a bullet if the user blows into the mbed humidity sensor
+        bullet = Bullet() # shoots out super bullet
+        # Set the bullet so it is where the player is
+        bullet.rect.x = player.rect.x
+        bullet.rect.y = player.rect.y
+        # Add the bullet to the lists
+        all_sprites_list.add(bullet)
+        bullet_list.add(bullet)
+        checksteer()
+        
+           
  
     # --- Game logic
  
